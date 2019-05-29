@@ -28,7 +28,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
 
     implementation "androidx.appcompat:appcompat:$androidx_appcompat_version"
     implementation "androidx.constraintlayout:constraintlayout:$androidx_constraint_layout_version"
@@ -36,7 +35,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle_extensions_version"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$retrofit_coroutines_adapter"
 
     implementation "com.tickaroo.tikxml:core:$tikxml_version"
     implementation "com.tickaroo.tikxml:retrofit-converter:$tikxml_version"
@@ -45,6 +43,9 @@ dependencies {
 
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     implementation "com.squareup.picasso:picasso:$picasso_version"
 
