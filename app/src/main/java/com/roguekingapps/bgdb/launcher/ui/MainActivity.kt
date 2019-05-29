@@ -12,13 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.roguekingapps.bgdb.R
 import com.roguekingapps.bgdb.application.BGDbApplication
-import com.roguekingapps.bgdb.boardgame.network.BoardGame
-import com.roguekingapps.bgdb.boardgame.network.ResponseResult.Error
-import com.roguekingapps.bgdb.boardgame.network.ResponseResult.Success
+import com.roguekingapps.bgdb.common.network.Status.ERROR
+import com.roguekingapps.bgdb.common.network.Status.LOADING
+import com.roguekingapps.bgdb.common.network.Status.SUCCESS
+import com.roguekingapps.bgdb.boardgame.storage.BoardGame
 import com.roguekingapps.bgdb.boardgame.viewmodel.BoardGamesViewModel
 import com.roguekingapps.bgdb.launcher.di.DaggerMainActivityComponent
 import com.roguekingapps.bgdb.launcher.ui.MainActivity.BoardGamesAdapter.BoardGameViewHolder
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_main.mainButton
 import kotlinx.android.synthetic.main.activity_main.mainRecyclerView
 import kotlinx.android.synthetic.main.activity_main.mainTextView
 import javax.inject.Inject
@@ -38,14 +40,18 @@ class MainActivity : AppCompatActivity() {
         viewModel.getBoardGames()
 
         viewModel.boardGames.observe(this, Observer {
-            when (it) {
-                is Success -> {
-                    (mainRecyclerView.adapter as BoardGamesAdapter).boardGames = it.data.boardGames
+            when(it.status) {
+                LOADING -> {}
+                SUCCESS  -> {
+                    (mainRecyclerView.adapter as BoardGamesAdapter).boardGames = it.data as List<BoardGame>
                     (mainRecyclerView.adapter as BoardGamesAdapter).notifyDataSetChanged()
                 }
-                is Error -> mainTextView.text = it.toString()
+                ERROR -> mainTextView.text = it.toString()
+
             }
         })
+
+        mainButton.setOnClickListener { viewModel.getBoardGames() }
 
     }
 
@@ -60,7 +66,9 @@ class MainActivity : AppCompatActivity() {
             val boardGame = boardGames[position]
             holder.nameTextView.text = boardGame.name
             holder.yearTextView.text = boardGame.year
-            Picasso.get().load(boardGame.thumbnailUrl).into(holder.thumbnailImageView)
+            if (!boardGame.thumbnailUrl.isNullOrEmpty()) {
+                Picasso.get().load(boardGame.thumbnailUrl).into(holder.thumbnailImageView)
+            }
         }
 
         override fun getItemCount(): Int = boardGames.size
