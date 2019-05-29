@@ -1,28 +1,42 @@
 package com.roguekingapps.bgdb.boardgame.network
 
-import com.roguekingapps.bgdb.boardgame.network.ResponseResult.Error
-import com.roguekingapps.bgdb.boardgame.network.ResponseResult.Success
-import retrofit2.Response
+import androidx.lifecycle.LiveData
+import com.roguekingapps.bgdb.boardgame.storage.BoardGame
+import com.roguekingapps.bgdb.boardgame.storage.BoardGameDao
+import com.roguekingapps.bgdb.common.network.ApiResponse
+import com.roguekingapps.bgdb.common.network.AppExecutors
+import com.roguekingapps.bgdb.common.network.NetworkBoundResource
+import com.roguekingapps.bgdb.common.network.Resource
 
-class BoardGamesRepositoryImpl(private val service: BoardGamesService) : BoardGamesRepository {
+class BoardGamesRepositoryImpl(
+    private val appExecutors: AppExecutors,
+    private val service: BoardGamesService,
+    private val boardGameDao: BoardGameDao
+) : BoardGamesRepository {
 
-    override suspend fun getBoardGames(): ResponseResult<BoardGames> =
-        awaitResponse(object : ResponseHandler<BoardGames> {
+    override fun getBoardGames() : LiveData<Resource<List<BoardGame>>> {
+        return object : NetworkBoundResource<List<BoardGame>, BoardGamesDto>(appExecutors) {
 
-            override suspend fun doRequest(): Response<BoardGames> = service.getBoardGames().await()
+            override fun saveCallResult(data: BoardGamesDto) {
+                val boardGames = data.boardGameDtos.map {
+                    BoardGame(it.rank, it.id, it.name, it.year, it.thumbnailUrl)
+                }
+                boardGameDao.insertAll(boardGames)
+            }
 
-            override fun onSuccess(response: Response<BoardGames>) = Success(response.body() as BoardGames)
+            override fun shouldFetch(data: List<BoardGame>?): Boolean = true
 
-            override fun onFailure(): Error = Error()
+            override fun loadFromDb(): LiveData<List<BoardGame>> = boardGameDao.getBoardGames()
 
-            override fun onException(): Error = Error()
+            override fun createCall(): LiveData<ApiResponse<BoardGamesDto>> = service.getBoardGames()
 
-        })
+        }.asLiveData()
+    }
 
 }
 
 interface BoardGamesRepository {
 
-    suspend fun getBoardGames(): ResponseResult<BoardGames>
+    fun getBoardGames() : LiveData<Resource<List<BoardGame>>>
 
 }

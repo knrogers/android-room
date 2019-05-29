@@ -6,6 +6,8 @@ import com.roguekingapps.bgdb.application.di.DaggerApplicationComponent
 
 class BGDbApplication: Application() {
 
-    val applicationComponent: ApplicationComponent = DaggerApplicationComponent.factory().create(this)
+    val applicationComponent: ApplicationComponent =
+        DaggerApplicationComponent.factory()
+            .create(application = this, context = this)
 
 }
