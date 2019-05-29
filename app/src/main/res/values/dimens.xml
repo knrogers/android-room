@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="list_item_height">72dp</dimen>
+    <dimen name="list_item_padding_vertical">8dp</dimen>
+    <dimen name="list_item_padding_horizontal">16dp</dimen>
+
+    <dimen name="list_name_width">0dp</dimen>
+    <dimen name="list_name_text_size">14sp</dimen>
+
+    <dimen name="list_year_text_size">14sp</dimen>
+
+    <dimen name="list_thumbnail_width">56dp</dimen>
+    <dimen name="list_thumbnail_height">0dp</dimen>
+    <dimen name="list_thumbnail_margin">16dp</dimen>
+
+</resources>
